@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rector Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f9;
+        color: #333;
+      }
+
+      h2,
+      h3 {
+        color: #5c5c5c;
+      }
+
+      .container {
+        width: 80%;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 20px;
+      }
+
+      .header h2 {
+        margin: 0;
+      }
+
+      .logout-btn,
+      #applyLeaveBtn {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .logout-btn:hover,
+      #applyLeaveBtn:hover {
+        background-color: #45a049;
+      }
+
+      .button-container {
+        display: inline-block;
+      }
+
+      .table-container {
+        margin-top: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      .status-pending {
+        color: orange;
+      }
+
+      .status-approved {
+        color: green;
+      }
+
+      .status-rejected {
+        color: red;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .status-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .status-actions button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .approve-btn {
+        background-color: green;
+        color: white;
+      }
+
+      .reject-btn {
+        background-color: red;
+        color: white;
+      }
+
+      .approve-btn:hover {
+        background-color: darkgreen;
+      }
+
+      .reject-btn:hover {
+        background-color: darkred;
+      }
+
+      @media (max-width: 600px) {
+        .modal-content {
+          width: 80%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>Rector Dashboard</h2>
+        <div class="button-container">
+          <!-- <span>Hello, {{ user.username }}</span> -->
+          <!-- Logout button styled like Apply Leave button -->
+          <form action="{% url 'logout' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Logout</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <h3>All Leave Applications</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Student Name</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Reason</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for application in leave_applications %}
+            <tr>
+              <td>{{ application.student.username|title }}</td>
+              <td>{{ application.start_date }}</td>
+              <td>{{ application.end_date }}</td>
+              <td>{{ application.reason|title }}</td>
+              <td class="status-{{ application.status|lower }}">
+                {{ application.status| upper }}
+              </td>
+              <td class="status-actions">
+                <form
+                  action="{% url 'approve_leave' application.id %}"
+                  method="POST"
+                >
+                  {% csrf_token %}
+                  <button type="submit" class="approve-btn">Approve</button>
+                </form>
+                <form
+                  action="{% url 'reject_leave' application.id %}"
+                  method="POST"
+                >
+                  {% csrf_token %}
+                  <button type="submit" class="reject-btn">Reject</button>
+                </form>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6">No leave applications available</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

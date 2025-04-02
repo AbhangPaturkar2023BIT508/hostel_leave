@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Leave</title>
+    <style>
+        /* Your CSS here */
+    </style>
+</head>
+<body>
+    <h2>Apply for Leave</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="start_date">Start Date</label>
+        <input type="date" name="start_date" required>
+        
+        <label for="end_date">End Date</label>
+        <input type="date" name="end_date" required>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
